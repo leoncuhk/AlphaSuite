@@ -7,12 +7,9 @@ short-term moving average crosses above a long-term moving average.
 """
 
 import pandas as pd
-from decimal import Decimal
-
 import talib
 
 from pybroker_trainer.strategy_sdk import BaseStrategy
-from pybroker_trainer.trader import BaseTrader
 
 class MaCrossoverStrategy(BaseStrategy):
     """Implements the full logic for the MA Crossover strategy."""
@@ -61,23 +58,3 @@ class MaCrossoverStrategy(BaseStrategy):
         
         crossover = (data[fast_ma_col] > data[slow_ma_col]) & (data[fast_ma_col].shift(1) <= data[slow_ma_col].shift(1))
         return crossover.fillna(False)
-
-    class Trader(BaseTrader):
-        """Inner class to handle the live execution logic for this strategy."""
-
-        def execute(self, ctx):
-            """A simplified execution logic that does not use model predictions."""
-            params = self.params_map.get(ctx.symbol, {})
-            is_setup = self._check_setup_condition(ctx, params)
-
-            if is_setup and not ctx.long_pos():
-                risk_per_trade_pct = Decimal(str(params.get('risk_per_trade_pct', 0.02)))
-                exit_params = self._get_exit_logic(ctx, params)
-                stop_loss_points = exit_params.get('stop_loss')
-                
-                if stop_loss_points and stop_loss_points > 0:
-                    ctx.buy_shares = int((ctx.total_equity * risk_per_trade_pct) / stop_loss_points)
-                    for key, value in exit_params.items():
-                        if value is not None and value > 0:
-                            setattr(ctx, key, value)
-

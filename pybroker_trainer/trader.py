@@ -39,14 +39,31 @@ class BaseTrader:
             raise ValueError("ATR indicator is required for exit logic but not found in context. "
              "Ensure 'atr' is calculated and available in the data.")
 
-        atr = Decimal(str(ctx.atr[-1])) if len(ctx.atr) > 0 else Decimal('0')
+        # Check if the ATR feature has values before accessing it.
+        atr = Decimal(str(ctx.atr[-1])) if ctx.atr is not None and len(ctx.atr) > 0 else Decimal('0')
+        # Use str() to create Decimals from floats to avoid precision issues.
         stop_multiplier = Decimal(str(params.get('initial_stop_atr_multiplier', 2.0)))
         trail_multiplier = Decimal(str(params.get('trailing_stop_atr_multiplier', 1.5)))
-        
+
         return {
             'stop_loss': atr * stop_multiplier,
             'stop_trailing': atr * trail_multiplier
         }
+
+    def _execute_buy(self, ctx: ExecContext, params: dict):
+        """
+        A helper method that contains the common logic for executing a buy order,
+        including risk-based position sizing and setting exit parameters.
+        """
+        risk_per_trade_pct = Decimal(str(params.get('risk_per_trade_pct', 0.02)))
+        exit_params = self._get_exit_logic(ctx, params)
+        stop_loss_points = exit_params.get('stop_loss')
+
+        if stop_loss_points and stop_loss_points > 0:
+            ctx.buy_shares = int((ctx.total_equity * risk_per_trade_pct) / stop_loss_points)
+            for key, value in exit_params.items():
+                if value is not None and value > 0:
+                    setattr(ctx, key, value)
 
     def execute(self, ctx: ExecContext):
         """The core execution logic that runs on every bar."""
@@ -66,12 +83,22 @@ class BaseTrader:
         # if is_setup:
         #     print(f"{is_setup=}, {prob_win=}")
         if is_setup and prob_win > probability_threshold and not ctx.long_pos():
-            risk_per_trade_pct = Decimal(str(params.get('risk_per_trade_pct', 0.02)))
-            exit_params = self._get_exit_logic(ctx, params)
-            stop_loss_points = exit_params.get('stop_loss')
+            self._execute_buy(ctx, params)
 
-            if stop_loss_points and stop_loss_points > 0:
-                ctx.buy_shares = int((ctx.total_equity * risk_per_trade_pct) / stop_loss_points)
-                for key, value in exit_params.items():
-                    if value is not None and value > 0:
-                        setattr(ctx, key, value)
+class RuleBasedTrader(BaseTrader):
+    """
+    A trader for rule-based strategies that do not use ML models.
+    It enters trades based solely on the `setup_mask` condition.
+    """
+    def execute(self, ctx: ExecContext):
+        """The core execution logic for rule-based strategies."""
+        params = self.params_map.get(ctx.symbol)
+        if params is None:
+            logger.warning(f"No parameters found for symbol '{ctx.symbol}' in trader's params_map. Using empty params.")
+            params = {}
+
+        # For rule-based strategies, we only check the setup condition.
+        is_setup = self._check_setup_condition(ctx, params)
+
+        if is_setup and not ctx.long_pos():
+            self._execute_buy(ctx, params)

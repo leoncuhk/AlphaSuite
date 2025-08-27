@@ -14,20 +14,21 @@ import pandas as pd
 from typing import Dict, Optional, Tuple, Any
 
 from pybroker_trainer.indicator_utils import add_common_indicators
-from pybroker_trainer.trader import BaseTrader
+from pybroker_trainer.trader import BaseTrader, RuleBasedTrader
 
 class BaseStrategy(ABC):
     """
-    Abstract Base Class for all custom ML-based trading strategies.
+    The abstract base class for all trading strategies in AlphaSuite.
+    It defines the common interface for both rule-based and ML-based strategies.
     """
-    def __init__(self, params: Dict[str, Any]):
+    def __init__(self, params: Dict[str, Any] | None = None):
         """
         Initializes the strategy with a set of parameters.
 
         Args:
             params (dict): A dictionary of parameters for the strategy.
         """
-        self.params = params
+        self.params = params if params is not None else {}
 
     @staticmethod
     @abstractmethod
@@ -52,8 +53,9 @@ class BaseStrategy(ABC):
     @property
     def is_ml_strategy(self) -> bool:
         """
-        Returns True if the strategy uses a machine learning model.
-        Override and return False for purely rule-based strategies.
+        Specifies if the strategy is ML-based (True) or rule-based (False).
+        This property is crucial for the framework to select the correct execution logic.
+        Override and return False for purely rule-based strategies. The default is True.
         """
         return True
 
@@ -168,22 +170,14 @@ class BaseStrategy(ABC):
         """
         pass
 
-    def get_trader(self, model_name: Optional[str], params_map: dict) -> BaseTrader:
+    def get_trader(self, model_name: Optional[str], params_map: dict):
         """
-        Instantiates and returns the trader for this strategy.
-
-        If the strategy subclass defines its own inner `Trader` class,
-        that will be used. Otherwise, it defaults to using `BaseTrader`.
-        This allows strategies with standard execution logic to avoid
-        defining a redundant, empty Trader class.
+        Returns an instance of the appropriate trader for this strategy.
+        This default implementation selects the trader based on `is_ml_strategy`.
+        Individual strategies can override this for custom trader logic if needed.
         """
-        # Check if a custom Trader class is defined in the subclass
-        if hasattr(self, 'Trader') and issubclass(self.Trader, BaseTrader):
-            # Use the strategy's custom Trader
-            trader_class = self.Trader
+        if self.is_ml_strategy:
+            return BaseTrader(model_name=model_name, params_map=params_map)
         else:
-            # Default to the base trader (imported at the module level) if no custom one is provided.
-            trader_class = BaseTrader
-
-        return trader_class(model_name, params_map)
+            return RuleBasedTrader(model_name=None, params_map=params_map)
     
