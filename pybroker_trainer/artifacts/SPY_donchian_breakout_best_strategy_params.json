@@ -1,0 +1,9 @@
+{
+    "donchian_period": 49,
+    "atr_period": 12,
+    "initial_stop_atr_multiplier": 2.0439209896794743,
+    "trailing_stop_atr_multiplier": 3.4204769690179475,
+    "stop_out_window": 41,
+    "probability_threshold": 0.5500592767808151,
+    "risk_per_trade_pct": 0.03888193089431466
+}

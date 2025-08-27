@@ -1,0 +1,9 @@
+{
+    "ema_short_window": 11,
+    "ema_long_window": 25,
+    "atr_period": 15,
+    "initial_stop_atr_multiplier": 2.1025636650650297,
+    "trailing_stop_atr_multiplier": 4.891422315889104,
+    "stop_out_window": 81,
+    "risk_per_trade_pct": 0.04332779646944659
+}

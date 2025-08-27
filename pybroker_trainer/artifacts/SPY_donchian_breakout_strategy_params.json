@@ -1,0 +1,10 @@
+{
+    "donchian_period": 20,
+    "atr_period": 14,
+    "initial_stop_atr_multiplier": 2.0,
+    "trailing_stop_atr_multiplier": 3.0,
+    "stop_out_window": 60,
+    "probability_threshold": 0.6,
+    "risk_per_trade_pct": 0.02,
+    "disable_inner_parallelism": false
+}

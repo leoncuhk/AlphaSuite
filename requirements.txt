@@ -1,0 +1,39 @@
+# Core Framework
+streamlit
+
+# Database
+SQLAlchemy
+psycopg2-binary
+
+# Data & Financial Analysis
+pandas
+numpy<2.3
+scipy
+yfinance
+lib-pybroker
+lightgbm
+scikit-learn
+scikit-optimize
+pandas-market-calendars
+matplotlib
+mplfinance
+
+# NOTE: TA-Lib is a dependency that requires special installation.
+# On Windows, you may need to download the wheel file manually.
+# On Linux/macOS, you may need to install the underlying C library first.
+# See: https://github.com/mrjbq7/ta-lib
+TA-Lib
+
+# LLM & AI
+langchain
+langchain-google-genai
+google-generativeai
+textblob
+vaderSentiment
+
+# Utilities
+python-dotenv
+beautifulsoup4
+feedparser
+curl_cffi
+markdown-pdf

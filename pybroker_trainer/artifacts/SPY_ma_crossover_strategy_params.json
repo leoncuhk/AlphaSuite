@@ -1,0 +1,10 @@
+{
+    "ema_short_window": 13,
+    "ema_long_window": 34,
+    "atr_period": 14,
+    "initial_stop_atr_multiplier": 2.0,
+    "trailing_stop_atr_multiplier": 3.0,
+    "stop_out_window": 60,
+    "risk_per_trade_pct": 0.02,
+    "disable_inner_parallelism": false
+}

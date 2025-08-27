@@ -1,0 +1,8 @@
+{
+    "learning_rate": 0.06149738359035747,
+    "n_estimators": 500,
+    "num_leaves": 20,
+    "max_depth": 50,
+    "reg_alpha": 0.06684222699491192,
+    "reg_lambda": 1.0
+}
