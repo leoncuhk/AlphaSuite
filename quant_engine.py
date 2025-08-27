@@ -863,7 +863,7 @@ def _save_walkforward_artifacts(ticker, strategy_type, result, is_ml, last_train
     # 2. Save the strategy parameters used for the run
     strategy_params_filename = os.path.join(model_dir, f'{ticker}_{strategy_type}_strategy_params.json')
     with open(strategy_params_filename, 'w') as f:
-        json.dump(strategy_params, f, indent=4)
+        json.dump(strategy_params, f, indent=4, cls=NumpyEncoder)
     logger.info(f"Saved strategy parameters to {strategy_params_filename}")
 
     # --- Save ML-specific artifacts only if applicable ---
@@ -1320,6 +1320,25 @@ def run_tune_strategy(ticker, strategy_type, n_calls, start_date, end_date, comm
     with open(tuned_params_filename, 'w') as f:
         json.dump(best_params_dict, f, indent=4, cls=NumpyEncoder)
     logger.info(f"Saved best strategy parameters to {tuned_params_filename}")
+
+    # --- Re-run the final backtest with the best parameters to save the results ---
+    # This ensures that visualize-model will show the performance of the tuned strategy.
+    logger.info("\n--- Re-running final backtest with best parameters to save artifacts... ---")
+    # For ML strategies, we also tune the model's hyperparameters on this final run.
+    # For rule-based strategies, the `tune_hyperparameters` flag has no effect.
+    run_pybroker_walkforward(
+        ticker=ticker,
+        strategy_type=strategy_type,
+        start_date=start_date,
+        end_date=end_date,
+        tune_hyperparameters=True,
+        plot_results=False,
+        save_assets=True,
+        override_params=best_params_dict,
+        commission_cost=commission,
+        use_tuned_strategy_params=False # We are overriding directly
+    )
+    logger.info(f"--- Artifacts for best parameters saved. You can now use 'visualize-model'. ---")
 
 @cli.command(name='predict')
 @click.option('--ticker', '-t', required=True, help='Stock ticker symbol.')

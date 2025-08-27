@@ -28,42 +28,46 @@ from tools.yfinance_tool import load_ticker_data, save_or_update_company_data
 setup_logging('download_data.log')
 logger = logging.getLogger(__name__)
 
-# --- Forcing real-time logging to stdout for subprocesses ---
-# When this script is run as a subprocess for the UI, stdout is block-buffered.
-# To ensure logs appear in the UI in real-time, we must explicitly flush the
-# stream after each log message. We achieve this by replacing the default
-# StreamHandler with one that automatically flushes.
+def _configure_subprocess_logging():
+    """
+    Reconfigures the root logger for real-time output to stdout.
+    
+    When this script is run as a subprocess (e.g., from the Streamlit UI),
+    stdout is often block-buffered. This function replaces the standard
+    stdout handler with one that flushes after every log message, ensuring
+    that logs appear in the UI in real-time.
+    """
+    class _FlushingStreamHandler(logging.StreamHandler):
+        """A stream handler that flushes the stream after each record is emitted."""
+        def emit(self, record):
+            super().emit(record)
+            self.flush()
 
-class _FlushingStreamHandler(logging.StreamHandler):
-    """A stream handler that flushes the stream after each record is emitted."""
-    def emit(self, record):
-        super().emit(record)
-        self.flush()
+    root_logger = logging.getLogger()
+    stdout_handler_found = False
+    for handler in list(root_logger.handlers):
+        # Check for a handler that writes to stdout
+        if isinstance(handler, logging.StreamHandler) and handler.stream == sys.stdout:
+            # Replace the existing stdout handler with our flushing version
+            formatter = handler.formatter
+            level = handler.level
+            root_logger.removeHandler(handler)
+            
+            flushing_handler = _FlushingStreamHandler(sys.stdout)
+            flushing_handler.setFormatter(formatter)
+            flushing_handler.setLevel(level)
+            root_logger.addHandler(flushing_handler)
+            
+            stdout_handler_found = True
+            break
 
-# Ensure there is always a flushing handler for stdout. This is crucial for
-# streaming logs to the UI when this script is run as a subprocess.
-root_logger = logging.getLogger()
-stdout_handler_found = False
-for handler in list(root_logger.handlers):
-    if isinstance(handler, logging.StreamHandler) and handler.stream == sys.stdout:
-        # If a stdout handler already exists, replace it with our flushing version.
-        formatter = handler.formatter
-        level = handler.level
-        root_logger.removeHandler(handler)
+    if not stdout_handler_found:
+        # If no stdout handler was found, add a default one. This is a fallback
+        # in case the initial logging config omits a console logger.
         flushing_handler = _FlushingStreamHandler(sys.stdout)
-        flushing_handler.setFormatter(formatter)
-        flushing_handler.setLevel(level)
+        flushing_handler.setFormatter(logging.Formatter('%(message)s'))
+        flushing_handler.setLevel(logging.INFO)
         root_logger.addHandler(flushing_handler)
-        stdout_handler_found = True
-        break
-
-if not stdout_handler_found:
-    # If no stdout handler was found, add one. This is common when the initial
-    # config omits a console logger if it detects a non-interactive session.
-    flushing_handler = _FlushingStreamHandler(sys.stdout)
-    flushing_handler.setFormatter(logging.Formatter('%(message)s'))
-    flushing_handler.setLevel(logging.INFO)
-    root_logger.addHandler(flushing_handler)
 
 def initialize_database():
     """Initializes the database by calling the central setup function."""
@@ -171,6 +175,10 @@ def main():
     Parses command-line arguments and executes the corresponding function.
     This function encapsulates the main execution logic of the script.
     """
+    # Configure logging for real-time output when run as a subprocess.
+    # This should be called before any other logic in main.
+    _configure_subprocess_logging()
+
     # Load environment variables from .env file
     load_dotenv()
 
