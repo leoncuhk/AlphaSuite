@@ -244,6 +244,7 @@ def main():
     # Create a dictionary of arguments to pass to the function, excluding 'func'
     func_args = vars(args)
     command_func = func_args.pop('func', None)
+    func_args.pop('command', None) # Remove the command name itself, as it's not an argument for the target functions
     # Split comma-separated string arguments into lists
     if 'quote_types' in func_args:
         func_args['quote_types'] = func_args['quote_types'].split(',')
