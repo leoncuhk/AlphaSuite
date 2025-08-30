@@ -215,6 +215,7 @@ def main():
     # --- 'range_download' command ---
     parser_range_download = subparsers.add_parser('range_download', help='Download data for a specific date range.')
     add_common_download_args(parser_range_download)
+    parser_range_download.add_argument("--ticker_file", type=str, help="File with tickers.", default="yhallsym.json")
     parser_range_download.add_argument("--start_date", type=str, required=True, help="Start date (YYYY-MM-DD).")
     parser_range_download.add_argument("--end_date", type=str, required=True, help="End date (YYYY-MM-DD).")
     parser_range_download.add_argument("--existing_tickers_action", type=str, help="Action for existing tickers.", default="only")
