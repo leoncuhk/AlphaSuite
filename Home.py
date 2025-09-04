@@ -74,6 +74,8 @@ st.title("🏠 Welcome to AlphaSuite")
 
 st.markdown("""
 This application provides a suite of tools for financial analysis, model training, backtesting, and trade management.
+The source code for this project is available on [GitHub](https://github.com/rsandx/AlphaSuite).
+
 Use the sidebar to navigate between the different tools.
 
 ### Available Tools:
