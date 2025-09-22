@@ -17,14 +17,16 @@ AlphaSuite is a comprehensive suite of tools for quantitative financial analysis
     *   **AI-Powered Stock Reports**: Generate a comprehensive fundamental and technical analysis report or CANSLIM analysis for any stock.
     *   **News Intelligence**: Scans recent news, generates a detailed market briefing, and analyzes it against economic risk profiles.
 *   **Robust Data Pipeline**: Fetches and stores comprehensive company data, price history, financials, and analyst estimates from Yahoo Finance into a PostgreSQL database.
-*   **Interactive Web UI**: A Streamlit-based dashboard for managing data, training models, and analyzing results.
+*   **Interactive Web UI**: A Streamlit-based dashboard for managing data, training models, and analyzing results. 
 
 ## 📖 Articles & Case Studies
 
 Check out these articles to see how AlphaSuite can be used to develop and test sophisticated trading strategies from scratch:
 
-*   **[From Chaos Theory to a Profitable Trading Strategy in 30 Minutes](https://medium.com/@rshu/from-chaos-theory-to-a-profitable-trading-strategy-in-30-minutes-d247cba4bbbd)**: A step-by-step guide on building a rule-based strategy using concepts from chaos theory.
-*   **[From Chaos to Alpha, Part 2: Supercharging a Machine Learning Strategy with Lorenz Features](https://rshu.medium.com/from-chaos-to-alpha-part-2-supercharging-a-machine-learning-strategy-with-lorenz-features-794acfd3f88c)**: Demonstrates how to enhance an ML-based strategy with custom features and optimize it using walk-forward analysis.
+*   **[The Institutional Edge: How We Boosted a Strategy’s Return with Volume Profile](https://medium.com/codex/the-institutional-edge-how-we-boosted-a-strategys-return-from-162-to-223-with-one-indicator-eef74cadae91)**: A deep dive into using Volume Profile to enhance a classic trend-following strategy, demonstrating a significant performance boost.
+*   **[I Was Paralyzed by Uncertainty, So I Built My Own Quant Engine](https://medium.com/codex/i-was-paralyzed-by-stock-market-uncertainty-so-i-built-my-own-quant-engine-176a6706c451)**: The story behind AlphaSuite's creation and its mission to empower data-driven investors. Also available as a [video narration](https://youtu.be/NXk7bXPYGP8).
+*   **[From Chaos Theory to a Profitable Trading Strategy](https://medium.com/codex/from-chaos-theory-to-a-profitable-trading-strategy-in-30-minutes-d247cba4bbbd)**: A step-by-step guide on building a rule-based strategy using concepts from chaos theory.
+*   **[Supercharging a Machine Learning Strategy with Lorenz Features](https://medium.com/codex/from-chaos-to-alpha-part-2-supercharging-a-machine-learning-strategy-with-lorenz-features-794acfd3f88c)**: Demonstrates how to enhance an ML-based strategy with custom features and optimize it using walk-forward analysis.
 
 ## 🛠️ Tech Stack
 
